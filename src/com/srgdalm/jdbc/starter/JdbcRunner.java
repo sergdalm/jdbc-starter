@@ -16,12 +16,17 @@ public class JdbcRunner {
 //        System.out.println(result);
 //        var result = getFlightsBetween(LocalDate.of(2020,1,1).atStartOfDay(), LocalDateTime.now());
 //        System.out.println(result);
-        checkMetaData();
+        try {
+            checkMetaData();
+        } finally {
+            ConnectionManager.closePool();
+        }
+
 
     }
 
     private static void checkMetaData()  throws SQLException{
-        try(var connection = ConnectionManager.open()) {
+        try(var connection = ConnectionManager.get()) {
             var metaData = connection.getMetaData();
             var catalogs = metaData.getCatalogs();
             while(catalogs.next()) {
@@ -49,7 +54,7 @@ public class JdbcRunner {
 
         List<Long> result = new ArrayList<>();
 
-        try(var connection = ConnectionManager.open();
+        try(var connection = ConnectionManager.get();
             var prepareStatement = connection.prepareStatement(sql)) {
             prepareStatement.setFetchSize(50);
             prepareStatement.setQueryTimeout(10);
@@ -78,7 +83,7 @@ public class JdbcRunner {
              
                 """;
         List<Long> result = new ArrayList<>();
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              var prepareStatement = connection.prepareStatement(sql)) {
             prepareStatement.setLong(1, flightId);
             var resultSet = prepareStatement.executeQuery();
