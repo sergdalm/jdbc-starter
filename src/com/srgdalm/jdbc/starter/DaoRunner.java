@@ -1,6 +1,7 @@
 package com.srgdalm.jdbc.starter;
 
 import com.srgdalm.jdbc.starter.dao.TicketDao;
+import com.srgdalm.jdbc.starter.dto.TicketFilter;
 import com.srgdalm.jdbc.starter.entity.Ticket;
 
 import java.math.BigDecimal;
@@ -9,7 +10,8 @@ import java.util.Optional;
 
 public class DaoRunner {
     public static void main(String[] args) {
-        List<Ticket> tickets = TicketDao.getInstance().findAll();
+        var ticketFilter = new TicketFilter(3, 2, null, "A1");
+        List<Ticket> tickets = TicketDao.getInstance().findAll(ticketFilter);
         System.out.println(tickets);
     }
 

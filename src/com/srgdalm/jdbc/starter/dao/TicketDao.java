@@ -1,5 +1,6 @@
 package com.srgdalm.jdbc.starter.dao;
 
+import com.srgdalm.jdbc.starter.dto.TicketFilter;
 import com.srgdalm.jdbc.starter.entity.Ticket;
 import com.srgdalm.jdbc.starter.exeption.DaoException;
 import com.srgdalm.jdbc.starter.util.ConnectionManager;
@@ -8,6 +9,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class TicketDao {
     public static final TicketDao INSTANCE = new TicketDao();
@@ -43,6 +47,44 @@ public class TicketDao {
             WHERE id = ?""";
 
     private TicketDao() {
+    }
+
+    public List<Ticket> findAll(TicketFilter filter) {
+        List<Object> parameters = new ArrayList<>();
+        List<String> whereSql = new ArrayList<>();
+        if(filter.seatNo() != null) {
+            whereSql.add("seat_no LIKE ?");
+            parameters.add("%" + filter.seatNo() + "%");
+        }
+
+        if(filter.passengerName() != null) {
+            whereSql.add("passenger_name = ?");
+            parameters.add(filter.passengerName());
+        }
+        parameters.add(filter.limit());
+        parameters.add(filter.offset());
+
+        var where = whereSql.stream()
+                .collect(joining(" AND ", " WHERE ", " LIMIT ? OFFSET ?"));
+        
+        var sql = FIND_ALL_SQL + where;
+        try (var connection = ConnectionManager.get();
+             var prepareStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                prepareStatement.setObject(i + 1, parameters.get(i));
+            }
+
+            System.out.println(prepareStatement);
+            var resultSet = prepareStatement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while(resultSet.next()) {
+                tickets.add(buildTicket(resultSet));
+            }
+            return tickets;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+
     }
 
     public List<Ticket> findAll() {
