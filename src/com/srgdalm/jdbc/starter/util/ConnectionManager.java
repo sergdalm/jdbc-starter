@@ -21,6 +21,11 @@ public final class ConnectionManager {
     private ConnectionManager() {
     }
 
+    static {
+        loadDriver();
+        initConnectionPool();
+    }
+
     private static void initConnectionPool() {
         var poolSize = PropertiesUtil.get(PULL_SIZE_KEY);
         var size = poolSize == null ? DEFAULT_POOL_SIZE : Integer.parseInt(poolSize);
@@ -43,11 +48,6 @@ public final class ConnectionManager {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    static {
-        loadDriver();
-        initConnectionPool();
     }
 
     private static Connection open()  {
