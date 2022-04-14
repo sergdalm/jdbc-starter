@@ -2,14 +2,13 @@ package com.srgdalm.jdbc.starter.dao;
 
 import com.srgdalm.jdbc.starter.dto.TicketFilter;
 import com.srgdalm.jdbc.starter.entity.Ticket;
-import com.srgdalm.jdbc.starter.exeption.DaoException;
+import com.srgdalm.jdbc.starter.exception.DaoException;
 import com.srgdalm.jdbc.starter.util.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
