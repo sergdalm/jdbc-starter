@@ -74,7 +74,7 @@ public final class ConnectionManager {
         } catch (ClassNotFoundException e) {
             // в данном случае обязательно надо пробрасывать исключение
             // чтобы программа остановилась в случе если класс не подгрузится
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
